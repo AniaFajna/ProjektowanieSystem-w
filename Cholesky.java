@@ -14,6 +14,7 @@ public class MainClass {
 		M = new long[input][input];
 
 		fillMatrix(input);
+		showMatrix(input, A);
 		start = System.nanoTime();
 		choleskyAlgorithm(input);
 		finish = System.nanoTime();
@@ -23,7 +24,6 @@ public class MainClass {
 		transposeLMatrix(input);
 		multiplyMatrix(input);
 
-		showMatrix(input, A);
 		showMatrix(input, L);
 		showMatrix(input, Lt);
 		showMatrix(input, M);
