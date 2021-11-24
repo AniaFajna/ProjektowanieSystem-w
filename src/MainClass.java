@@ -5,7 +5,7 @@ public class MainClass {
 	private static long[][] A, L, Lt, M;
 	private static int nr, XLength, ZLength, WLength;
 	private static int[] W1, W2, W3, Z1, Z2, Z3, X1, X2, X3, V1, V2, operat;
-	private static int[][] Ic1, Ic2, Ic3, Ib1, Ib2, Ib3, Ia1, II, JI, JK, KI, I3, I33, I4, I34;
+	private static int[][] Ic1, Ic2, Ic3, Ib1, Ib2, Ib3, Ia1, II, JI, JK, KI, I3, I13, I4, I34, I23;
 	private static String[] options;
 	private static int[][] I24;
 
@@ -35,6 +35,8 @@ public class MainClass {
 		Ia1 = new int[100][4];
 		I3 = new int[100][30];
 		I4 = new int[100][30];
+		I13 = new int[100][30];
+		I23 = new int[100][30];
 		I24 = new int[100][30];
 		I34 = new int[100][30];
 		options = new String[3];
@@ -71,6 +73,8 @@ public class MainClass {
 		showWezlyI4();
 		showWezlyI34();
 		showWezlyI24();
+		showWezlyI23();
+		showWezlyI13();
 	}
 
 	private static void fillMatrix(int N) {
@@ -112,7 +116,6 @@ public class MainClass {
 		for (int i = 0; i < N; i++) {
 			for (int j = i; j <= i; j++) {
 				for (int k = i; k <= i; k++) {
-					nr += 1;
 					X1[nr] = i;
 					X2[nr] = j;
 					X3[nr] = k;
@@ -120,6 +123,7 @@ public class MainClass {
 					Ia1[nr][1] = i;
 					Ia1[nr][2] = i * 100 + j * 10 + k;
 					Ia1[nr][3] = 0;
+					nr++;
 					XLength++;
 					//A[i][i] = (long) Math.sqrt(A[i][i]);
 				}
@@ -133,7 +137,6 @@ public class MainClass {
 		for (int i = 0; i < N; i++) {
 			for (int j = i+1; j < N; j++) {
 				for (int k = i; k <= i; k++) {
-					nr += 1;
 					Z1[nr] = i;
 					Z2[nr] = j;
 					Z3[nr] = k;
@@ -145,6 +148,7 @@ public class MainClass {
 					Ib2[nr][1] = i;
 					Ib2[nr][2] = i * 100 + j * 10 + k;
 					Ib2[nr][3] = 1;
+					nr++;
 					ZLength++;
 					//A[j][i] = A[j][i]/A[i][i];
 				}
@@ -158,7 +162,6 @@ public class MainClass {
 		for (int i = 0; i < N; i++) {
 			for (int j = i+1; j < N; j++) {
 				for (int k = i+1; k <= j; k++) {
-					nr += 1;
 					W1[nr] = i;
 					W2[nr] = j;
 					W3[nr] = k;
@@ -174,6 +177,7 @@ public class MainClass {
 					Ic3[nr][1] = i;
 					Ic3[nr][2] = i * 100 + j * 10 + k;
 					Ic3[nr][3] = 2;
+					nr++;
 					WLength++;
 					//A[j][k] = A[j][k] - (A[j][i] * A[k][i]);
 				}
@@ -183,29 +187,29 @@ public class MainClass {
 
 	private static void choleskyGrafMixTogether() {
 		nr = 0;
-		for (int i = 1; i <= XLength; i++) {
-			nr++;
+		for (int i = 0; i < XLength; i++) {
 			V1[nr] = X1[i] * 100 + X2[i] * 10 + X3[i];
-		}
-		for (int i = 1; i <= ZLength; i++) {
 			nr++;
+		}
+		for (int i = 0; i < ZLength; i++) {
 			V1[nr] = Z1[i] * 100 + Z2[i] * 10 + Z3[i];
-		}
-		for (int i = 1; i <= WLength; i++) {
 			nr++;
-			V1[nr] = W1[i] * 100 + W2[i] * 10 + W3[i];
 		}
-		V2 = new int[nr+1];
-		V2 = Arrays.copyOfRange(V1, 0, nr+1);
+		for (int i = 0; i < WLength; i++) {
+			V1[nr] = W1[i] * 100 + W2[i] * 10 + W3[i];
+			nr++;
+		}
+		V2 = new int[nr];
+		V2 = Arrays.copyOfRange(V1, 0, nr);
 		Arrays.sort(V2);
 
-		II = new int[nr+1][2];
-		JI = new int[nr+1][2];
-		JK = new int[nr+1][2];
-		KI = new int[nr+1][2];
-		operat = new int[nr+1];
-		for (int i = 0; i <= nr; i++) {
-			for (int j = 1; j <= XLength; j++) {
+		II = new int[nr][2];
+		JI = new int[nr][2];
+		JK = new int[nr][2];
+		KI = new int[nr][2];
+		operat = new int[nr];
+		for (int i = 0; i < nr; i++) {
+			for (int j = 0; j < XLength; j++) {
 				if (V2[i] == Ia1[j][2]) {
 					II[i][0] = Ia1[j][0];
 					II[i][1] = Ia1[j][1];
@@ -216,7 +220,7 @@ public class MainClass {
 					II[i][1] = 1000;
 				}
 			}
-			for (int j = 1; j <= ZLength; j++) {
+			for (int j = 0; j < ZLength; j++) {
 				if (V2[i] == Ib1[j][2]) {
 					JI[i][0] = Ib1[j][0];
 					JI[i][1] = Ib1[j][1];
@@ -227,7 +231,7 @@ public class MainClass {
 					JI[i][1] = 1000;
 				}
 			}
-			for (int j = 1; j <= WLength; j++) {
+			for (int j = 0; j < WLength; j++) {
 				if (V2[i] == Ic1[j][2]) {
 					JK[i][0] = Ic1[j][0];
 					JK[i][1] = Ic1[j][1];
@@ -238,7 +242,7 @@ public class MainClass {
 					JK[i][1] = 1000;
 				}
 			}
-			for (int j = 1; j <= WLength; j++) {
+			for (int j = 0; j < WLength; j++) {
 				if (V2[i] == Ic3[j][2]) {
 					KI[i][0] = Ic3[j][0];
 					KI[i][1] = Ic3[j][1];
@@ -251,106 +255,12 @@ public class MainClass {
 			}
 		}
 
-		int[][] usedI3 = new int[60][2];
-		int indexI3 = 1;
-		int argsIndex = 2;
-		for (int i = 0; i <= nr; i++) {
-			if (JK[i][0] == 1000 && JK[i][1] == 1000) {
-				continue;
-			} else {
-				if (matrixSearch(usedI3, Ic1[i][0], Ic1[i][1])) {
-					for (int j = i-1; j <= nr; j++) {
-						if (Ic1[i][0] == Ic1[j][0] && Ic1[i][1] == Ic1[j][1]) {
-							I3[indexI3][argsIndex] = Ic1[j][2];
-							argsIndex++;
-							I3[indexI3][0] = Ic1[j][0];
-							I3[indexI3][1] = Ic1[j][1];
-						}
-					}
-					usedI3[indexI3][0] = Ic1[i][0];
-					usedI3[indexI3][1] = Ic1[i][1];
-					argsIndex = 2;
-					indexI3++;
-				} else {
-					continue;
-				}
-			}
-		}
-		int[][] usedI4 = new int[60][2];
-		int indexI4 = 1;
-		argsIndex = 2;
-		for (int i = 0; i <= nr; i++) {
-			if (KI[i][0] == 1000 && KI[i][1] == 1000) {
-				continue;
-			} else {
-				if (matrixSearch(usedI4, Ic3[i][0], Ic3[i][1])) {
-					for (int j = i-1; j <= nr; j++) {
-						if (Ic3[i][0] == Ic3[j][0] && Ic3[i][1] == Ic3[j][1]) {
-							I4[indexI4][argsIndex] = Ic3[j][2];
-							argsIndex++;
-							I4[indexI4][0] = Ic3[j][0];
-							I4[indexI4][1] = Ic3[j][1];
-						}
-					}
-					usedI4[indexI4][0] = Ic3[i][0];
-					usedI4[indexI4][1] = Ic3[i][1];
-					argsIndex = 2;
-					indexI4++;
-				} else {
-					continue;
-				}
-			}
-		}
-		int[][] usedI34 = new int[60][2];
-		int indexI34 = 1;
-		argsIndex = 2;
-		for (int i = 0; i <= nr; i++) {
-			if (JK[i][0] == 1000 && JK[i][1] == 1000) {
-				continue;
-			} else {
-				if (matrixSearch(usedI34, Ic1[i][0], Ic1[i][1])) {
-					for (int j = i; j <= nr; j++) {
-						if (Ic1[i-1][0] == Ic3[j][0] && Ic1[i-1][1] == Ic3[j][1]) {
-							I34[indexI34][argsIndex] = Ic3[j][2];
-							argsIndex++;
-							I34[indexI34][0] = Ic3[j][0];
-							I34[indexI34][1] = Ic3[j][1];
-						}
-					}
-					usedI34[indexI34][0] = Ic1[i][0];
-					usedI34[indexI34][1] = Ic1[i][1];
-					argsIndex = 2;
-					indexI34++;
-				} else {
-					continue;
-				}
-			}
-		}
-		int[][] usedI24 = new int[60][2];
-		int indexI24 = 1;
-		argsIndex = 2;
-		for (int i = 0; i <= nr; i++) {
-			if (JI[i][0] == 1000 && JI[i][1] == 1000) {
-				continue;
-			} else {
-				if (matrixSearch(usedI24, Ib1[i][0], Ib1[i][1])) {
-					for (int j = i; j <= nr; j++) {
-						if (Ib1[i-1][0] == Ic3[j][0] && Ib1[i-1][1] == Ic3[j][1]) {
-							I24[indexI24][argsIndex] = Ic3[j][2];
-							argsIndex++;
-							I24[indexI24][0] = Ic3[j][0];
-							I24[indexI24][1] = Ic3[j][1];
-						}
-					}
-					usedI24[indexI24][0] = Ib1[i][0];
-					usedI24[indexI24][1] = Ib1[i][1];
-					argsIndex = 2;
-					indexI24++;
-				} else {
-					continue;
-				}
-			}
-		}
+		createI3();
+		createI4();
+		createI24();
+		createI34();
+		createI23();
+		createI13();
 	}
 
 	private static boolean matrixSearch(int[][] matrix, int srchNum1, int srchNum2) {
@@ -365,7 +275,7 @@ public class MainClass {
 	private static void showMix() {
 		System.out.println();
 		System.out.println("nr	V		 I1		I2		I3		I4");
-		for (int i = 1; i < V2.length; i++) {
+		for (int i = 0; i < V2.length; i++) {
 			System.out.print(i + "\t" + V2[i] + "\t\t");
 			if (II[i][0] == 1000 || II[i][1] == 1000) {
 				System.out.print("x x\t\t");
@@ -388,6 +298,241 @@ public class MainClass {
 				System.out.format("%d %d\t\t", KI[i][0], KI[i][1]);
 			}
 			System.out.format("%s\n", options[operat[i]]);
+		}
+	}
+
+	private static void createI3() {
+		int[][] usedI3 = new int[60][2];
+		int indexI3 = 0;
+		int argsIndex = 2;
+		for (int i = 0; i < nr; i++) {
+			if (JK[i][0] == 1000 && JK[i][1] == 1000) {
+				continue;
+			} else {
+				if (matrixSearch(usedI3, JK[i][0], JK[i][1])) {
+					for (int j = 0; j < nr; j++) {
+						if (JK[i][0] == Ic1[j][0] && JK[i][1] == Ic1[j][1]) {
+							I3[indexI3][argsIndex] = Ic1[j][2];
+							argsIndex++;
+							I3[indexI3][0] = Ic1[j][0];
+							I3[indexI3][1] = Ic1[j][1];
+						}
+					}
+					usedI3[indexI3][0] = JK[i][0];
+					usedI3[indexI3][1] = JK[i][1];
+					if (argsIndex == 3) {
+						I3[indexI3][0] = 0;
+						I3[indexI3][1] = 0;
+						argsIndex = 2;
+					} else {
+						argsIndex = 2;
+						indexI3++;
+					}
+				}
+			}
+		}
+	}
+
+	private static void createI4() {
+		int[][] usedI4 = new int[60][2];
+		int indexI4 = 0;
+		int argsIndex = 2;
+		for (int i = 0; i < nr; i++) {
+			if (KI[i][0] == 1000 && KI[i][1] == 1000) {
+				continue;
+			} else {
+				if (matrixSearch(usedI4, KI[i][0], KI[i][1])) {
+					for (int j = 0; j < nr; j++) {
+						if (KI[i][0] == Ic3[j][0] && KI[i][1] == Ic3[j][1]) {
+							I4[indexI4][argsIndex] = Ic3[j][2];
+							argsIndex++;
+							I4[indexI4][0] = Ic3[j][0];
+							I4[indexI4][1] = Ic3[j][1];
+						}
+					}
+					usedI4[indexI4][0] = KI[i][0];
+					usedI4[indexI4][1] = KI[i][1];
+					if (argsIndex == 3) {
+						I4[indexI4][0] = 0;
+						I4[indexI4][1] = 0;
+						argsIndex = 2;
+					} else {
+						argsIndex = 2;
+						indexI4++;
+					}
+				}
+			}
+		}
+	}
+
+	private static void createI24() {
+		int[][] usedI24 = new int[60][2];
+		int indexI24 = 1;
+		int argsIndex = 2;
+		int firstVal = 0;
+		int firstIndex = 0;
+		for (int i = 0; i < nr; i++) {
+			if (JI[i][0] == 1000 && JI[i][1] == 1000) {
+				continue;
+			} else {
+				if (matrixSearch(usedI24, JI[i][0], JI[i][1])) {
+					for (int j = 0; j < nr; j++) {
+						if (JI[i][0] == Ic3[j][0] && JI[i][1] == Ic3[j][1]) {
+							if (argsIndex == 2) {
+								for (int p = 0; p < Ic1.length; p++) {
+									if (JI[i][0] == Ic3[p][0] && JI[i][1] == Ic3[p][1]) {
+										firstVal = Ic3[p][2];
+										firstIndex = argsIndex;
+										argsIndex++;
+										break;
+									}
+								}
+							}
+							I24[indexI24][argsIndex] = Ic3[j][2];
+							I24[indexI24][0] = Ic3[j][0];
+							I24[indexI24][1] = Ic3[j][1];
+							argsIndex++;
+						}
+					}
+					I24[indexI24][firstIndex] = firstVal;
+					usedI24[indexI24][0] = JI[i][0];
+					usedI24[indexI24][1] = JI[i][1];
+					if (argsIndex == 2) {
+						I24[indexI24][0] = 0;
+						I24[indexI24][1] = 0;
+					} else {
+						argsIndex = 2;
+						indexI24++;
+					}
+				}
+			}
+		}
+	}
+
+	private static void createI34() {
+		int[][] usedI34 = new int[60][2];
+		int indexI34 = 0;
+		int argsIndex = 2;
+		int firstVal = 0;
+		int firstIndex = 0;
+		boolean cont = false;
+		for (int i = 0; i < nr; i++) {
+			if (JK[i][0] == 1000 && JK[i][1] == 1000) {
+				continue;
+			} else {
+				if (matrixSearch(usedI34, JK[i][0], JK[i][1])) {
+					for (int j = 0; j < nr; j++) {
+						if (JK[i][0] == Ic3[j][0] && JK[i][1] == Ic3[j][1]) {
+							if (argsIndex == 2) {
+								for (int p = 0; p < Ic1.length; p++) {
+									if (JK[i][0] == Ic1[p][0] && JK[i][1] == Ic1[p][1]) {
+										firstVal = Ic1[p][2];
+										firstIndex = argsIndex;
+										argsIndex++;
+										break;
+									}
+								}
+							}
+							I34[indexI34][argsIndex] = Ic3[j][2];
+							I34[indexI34][0] = Ic3[j][0];
+							I34[indexI34][1] = Ic3[j][1];
+							argsIndex++;
+						}
+					}
+					I34[indexI34][firstIndex] = firstVal;
+					usedI34[indexI34][0] = JK[i][0];
+					usedI34[indexI34][1] = JK[i][1];
+					if (argsIndex == 2) {
+						I34[indexI34][0] = 0;
+						I34[indexI34][1] = 0;
+					} else {
+						argsIndex = 2;
+						indexI34++;
+					}
+				}
+			}
+		}
+	}
+
+	private static void createI23() {
+		int[][] usedI23 = new int[60][2];
+		int indexI23 = 1;
+		int argsIndex = 2;
+		int lastVal = 0;
+		for (int i = 0; i < nr; i++) {
+			if (JI[i][0] == 1000 && JI[i][1] == 1000) {
+				continue;
+			} else {
+				if (matrixSearch(usedI23, JI[i][0], JI[i][1])) {
+					for (int j = 0; j < nr; j++) {
+						if (JI[i][0] == Ic1[j][0] && JI[i][1] == Ic1[j][1]) {
+							if (argsIndex == 2) {
+								for (int p = 0; p < Ib1.length; p++) {
+									if (JI[i][0] == Ib1[p][0] && JI[i][1] == Ib1[p][1]) {
+										lastVal = Ib1[p][2];
+										break;
+									}
+								}
+							}
+							I23[indexI23][argsIndex] = Ic1[j][2];
+							I23[indexI23][0] = Ic1[j][0];
+							I23[indexI23][1] = Ic1[j][1];
+							argsIndex++;
+						}
+					}
+					I23[indexI23][argsIndex] = lastVal;
+					usedI23[indexI23][0] = JI[i][0];
+					usedI23[indexI23][1] = JI[i][1];
+					if (argsIndex == 2) {
+						I23[indexI23][0] = 0;
+						I23[indexI23][1] = 0;
+					} else {
+						argsIndex = 2;
+						indexI23++;
+					}
+				}
+			}
+		}
+	}
+
+	private static void createI13() {
+		int[][] usedI13 = new int[60][2];
+		int indexI13 = 1;
+		int argsIndex = 2;
+		int lastVal = 0;
+		for (int i = 0; i < nr; i++) {
+			if (II[i][0] == 1000 && II[i][1] == 1000) {
+				continue;
+			} else {
+				if (matrixSearch(usedI13, II[i][0], II[i][1])) {
+					for (int j = 0; j < nr; j++) {
+						if (II[i][0] == Ic1[j][0] && II[i][1] == Ic1[j][1]) {
+							if (argsIndex == 2) {
+								for (int p = 0; p < Ia1.length; p++) {
+									if (II[i][0] == Ia1[p][0] && II[i][0] == Ia1[p][1]) {
+										lastVal = Ia1[p][2];
+										break;
+									}
+								}
+							}
+							I13[indexI13][argsIndex] = Ic1[j][2];
+							I13[indexI13][0] = Ic1[j][0];
+							I13[indexI13][1] = Ic1[j][1];
+							argsIndex++;
+						}
+					}
+					I13[indexI13][argsIndex] = lastVal;
+					usedI13[indexI13][0] = II[i][0];
+					usedI13[indexI13][1] = II[i][1];
+					if (argsIndex == 2) {
+						I13[indexI13][0] = 0;
+						I13[indexI13][1] = 0;
+					} else {
+						argsIndex = 2;
+						indexI13++;
+					}
+				}
+			}
 		}
 	}
 
@@ -435,10 +580,32 @@ public class MainClass {
 		System.out.println();
 	}
 
+	private static void showWezlyI23() {
+		for (int i = 0; i < 100; i++) {
+			if (I23[i][0] == 0) {
+				continue;
+			} else {
+				System.out.format("I23 : %d %d : %d %d %d\n", I23[i][0], I23[i][1], I23[i][2], I23[i][3], I23[i][4]);
+			}
+		}
+		System.out.println();
+	}
+
+	private static void showWezlyI13() {
+		for (int i = 0; i < 100; i++) {
+			if (I13[i][0] == 0) {
+				continue;
+			} else {
+				System.out.format("I13 : %d %d : %d %d %d %d\n", I13[i][0], I13[i][1], I13[i][2], I13[i][3], I13[i][4], I13[i][5]);
+			}
+		}
+		System.out.println();
+	}
+
 	private static void showCholeskyGrafPart1() {
-		nr = 1;
+		nr = 0;
 		System.out.println("nr	X1	X2	X3		Ia1");
-		while(X2[nr] != 0 || nr == 1) {
+		while(X2[nr] != 0 || nr == 0) {
 			System.out.format("%d	%d	%d	%d\t\t%d %d		sqrt\n",nr, X1[nr], X2[nr], X3[nr],
 					Ia1[nr][0], Ia1[nr][1]);
 			nr++;
@@ -446,9 +613,9 @@ public class MainClass {
 	}
 
 	private static void showCholeskyGrafPart2() {
-		nr = 1;
+		nr = 0;
 		System.out.println("nr	Z1	Z2	Z3		Ib1		Ib2");
-		while(Z2[nr] != 0 || nr == 1) {
+		while(Z2[nr] != 0 || nr == 0) {
 			System.out.format("%d	%d	%d	%d\t\t%d %d\t\t%d %d		div\n",nr, Z1[nr], Z2[nr], Z3[nr],
 					Ib1[nr][0], Ib1[nr][1], Ib2[nr][0], Ib2[nr][1]);
 			nr++;
@@ -456,7 +623,7 @@ public class MainClass {
 	}
 
 	private static void showCholeskyGrafPart3() {
-		nr = 1;
+		nr = 0;
 		System.out.println("nr	W1	W2	W3		Ic1		Ic2		Ic3");
 		while(W3[nr] != 0) {
 			System.out.format("%d	%d	%d	%d\t\t%d %d\t\t%d %d\t\t%d %d		sub(multiply)\n",nr, W1[nr], W2[nr], W3[nr],
