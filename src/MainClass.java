@@ -5,7 +5,7 @@ public class MainClass {
 	private static long[][] A, L, Lt, M;
 	private static int nr, XLength, ZLength, WLength;
 	private static int[] W1, W2, W3, Z1, Z2, Z3, X1, X2, X3, V1, V2, operat;
-	private static int[][] Ic1, Ic2, Ic3, Ib1, Ib2, Ib3, Ia1, II, JI, JK, KI, I3, I13, I4, I34, I23;
+	private static int[][] Ic1, Ic2, Ic3, Ib1, Ib2, Ia1, II, JI, JK, KI, I3, I13, I4, I34, I23;
 	private static String[] options;
 	private static int[][] I24;
 
@@ -31,7 +31,6 @@ public class MainClass {
 		Ic3 = new int[100][4];
 		Ib1 = new int[100][4];
 		Ib2 = new int[100][4];
-		Ib3 = new int[100][4];
 		Ia1 = new int[100][4];
 		I3 = new int[100][30];
 		I4 = new int[100][30];
@@ -99,7 +98,7 @@ public class MainClass {
 	private static void choleskyAlgorithm(int N) {
 		for (int i = 0; i < N; i++) {
 			A[i][i] = (long) Math.sqrt(A[i][i]);
-			for (int j = i; j < N; j++) {
+			for (int j = i+1; j < N; j++) {
 				A[j][i] = A[j][i]/A[i][i];
 			}
 			for (int j = i+1; j < N; j++) {
@@ -254,7 +253,6 @@ public class MainClass {
 				}
 			}
 		}
-
 		createI3();
 		createI4();
 		createI24();
@@ -379,9 +377,9 @@ public class MainClass {
 					for (int j = 0; j < nr; j++) {
 						if (JI[i][0] == Ic3[j][0] && JI[i][1] == Ic3[j][1]) {
 							if (argsIndex == 2) {
-								for (int p = 0; p < Ic1.length; p++) {
-									if (JI[i][0] == Ic3[p][0] && JI[i][1] == Ic3[p][1]) {
-										firstVal = Ic3[p][2];
+								for (int p = 0; p < Ib1.length; p++) {
+									if (JI[i][0] == Ib1[p][0] && JI[i][1] == Ib1[p][1]) {
+										firstVal = Ib1[p][2];
 										firstIndex = argsIndex;
 										argsIndex++;
 										break;
@@ -415,7 +413,6 @@ public class MainClass {
 		int argsIndex = 2;
 		int firstVal = 0;
 		int firstIndex = 0;
-		boolean cont = false;
 		for (int i = 0; i < nr; i++) {
 			if (JK[i][0] == 1000 && JK[i][1] == 1000) {
 				continue;
@@ -563,7 +560,7 @@ public class MainClass {
 			if (I34[i][0] == 0) {
 				continue;
 			} else {
-				System.out.format("I34 : %d %d : %d %d %d\n", I34[i][0], I34[i][1], I34[i][2], I34[i][3], I34[i][4]);
+				System.out.format("I34 : %d %d : %d %d %d %d\n", I34[i][0], I34[i][1], I34[i][2], I34[i][3], I34[i][4], I34[i][5]);
 			}
 		}
 		System.out.println();
@@ -574,7 +571,7 @@ public class MainClass {
 			if (I24[i][0] == 0) {
 				continue;
 			} else {
-				System.out.format("I24 : %d %d : %d %d %d\n", I24[i][0], I24[i][1], I24[i][2], I24[i][3], I24[i][4]);
+				System.out.format("I24 : %d %d : %d %d %d %d\n", I24[i][0], I24[i][1], I24[i][2], I24[i][3], I24[i][4], I24[i][5]);
 			}
 		}
 		System.out.println();
@@ -585,7 +582,7 @@ public class MainClass {
 			if (I23[i][0] == 0) {
 				continue;
 			} else {
-				System.out.format("I23 : %d %d : %d %d %d\n", I23[i][0], I23[i][1], I23[i][2], I23[i][3], I23[i][4]);
+				System.out.format("I23 : %d %d : %d %d %d %d\n", I23[i][0], I23[i][1], I23[i][2], I23[i][3], I23[i][4], I23[i][5]);
 			}
 		}
 		System.out.println();
