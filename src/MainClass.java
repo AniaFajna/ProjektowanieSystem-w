@@ -5,9 +5,25 @@ public class MainClass {
 	private static long[][] A, L, Lt, M;
 	private static int nr, XLength, ZLength, WLength;
 	private static int[] W1, W2, W3, Z1, Z2, Z3, X1, X2, X3, V1, V2, operat;
-	private static int[][] Ic1, Ic2, Ic3, Ib1, Ib2, Ia1, II, JI, JK, KI, I3, I13, I4, I34, I23;
+	private static int[][] Ic1;
+	private static int[][] Ic2;
+	private static int[][] Ic3;
+	private static int[][] Ib1;
+	private static int[][] Ib2;
+	private static int[][] Ia1;
+	private static int[][] II;
+	private static int[][] JI;
+	private static int[][] JK;
+	private static int[][] KI;
+	private static int[][][] I1;
+	private static int[][][] I2;
+	private static int[][][] I3;
+	private static int[][][] I13;
+	private static int[][][] I4;
+	private static int[][][] I34;
+	private static int[][][] I23;
 	private static String[] options;
-	private static int[][] I24;
+	private static int[][][] I24;
 
 	public static void main(String[] args) {
 		Scanner in = new Scanner(System.in);
@@ -32,12 +48,14 @@ public class MainClass {
 		Ib1 = new int[100][4];
 		Ib2 = new int[100][4];
 		Ia1 = new int[100][4];
-		I3 = new int[100][30];
-		I4 = new int[100][30];
-		I13 = new int[100][30];
-		I23 = new int[100][30];
-		I24 = new int[100][30];
-		I34 = new int[100][30];
+		I1 = new int[100][30][2];
+		I2 = new int[100][30][2];
+		I3 = new int[100][30][2];
+		I4 = new int[100][30][2];
+		I13 = new int[100][30][2];
+		I23 = new int[100][30][2];
+		I24 = new int[100][30][2];
+		I34 = new int[100][30][2];
 		options = new String[3];
 		options[0] = "sqrt";
 		options[1] = "div";
@@ -68,6 +86,8 @@ public class MainClass {
 		showCholeskyGrafPart3();
 		choleskyGrafMixTogether();
 		showMix();
+		showWezlyI1();
+		showWezlyI2();
 		showWezlyI3();
 		showWezlyI4();
 		showWezlyI34();
@@ -110,6 +130,11 @@ public class MainClass {
 	}
 
 	private static void choleskyGrafPart1(int N) {
+		for (int i = 0; i < 100; i++) {
+			for (int j = 0; j < 4; j++) {
+				Ia1[i][j] = 999;
+			}
+		}
 		nr = 0;
 		XLength = 0;
 		for (int i = 0; i < N; i++) {
@@ -131,6 +156,11 @@ public class MainClass {
 	}
 
 	private static void choleskyGrafPart2(int N) {
+		for (int i = 0; i < 100; i++) {
+			for (int j = 0; j < 4; j++) {
+				Ib2[i][j] = 999;
+			}
+		}
 		nr = 0;
 		ZLength = 0;
 		for (int i = 0; i < N; i++) {
@@ -208,22 +238,32 @@ public class MainClass {
 		KI = new int[nr][2];
 		operat = new int[nr];
 		for (int i = 0; i < nr; i++) {
-			for (int j = 0; j < XLength; j++) {
+			for (int j = 0; j < ZLength; j++) {
 				if (V2[i] == Ia1[j][2]) {
 					II[i][0] = Ia1[j][0];
 					II[i][1] = Ia1[j][1];
 					operat[i] = Ia1[j][3];
+					break;
+				} else if (V2[i] == Ib2[j][2]){
+					II[i][0] = Ib2[j][0];
+					II[i][1] = Ib2[j][1];
+					operat[i] = Ib2[j][3];
 					break;
 				} else {
 					II[i][0] = 1000;
 					II[i][1] = 1000;
 				}
 			}
-			for (int j = 0; j < ZLength; j++) {
+			for (int j = 0; j < WLength; j++) {
 				if (V2[i] == Ib1[j][2]) {
 					JI[i][0] = Ib1[j][0];
 					JI[i][1] = Ib1[j][1];
 					operat[i] = Ib1[j][3];
+					break;
+				} else if (V2[i] == Ic2[j][2]){
+					JI[i][0] = Ic2[j][0];
+					JI[i][1] = Ic2[j][1];
+					operat[i] = Ic2[j][3];
 					break;
 				} else {
 					JI[i][0] = 1000;
@@ -253,6 +293,8 @@ public class MainClass {
 				}
 			}
 		}
+		createI1();
+		createI2();
 		createI3();
 		createI4();
 		createI24();
@@ -299,33 +341,135 @@ public class MainClass {
 		}
 	}
 
+	private static void createI1() {
+		int[][] usedI1 = new int[60][2];
+		for (int i = 0; i < 60; i++) {
+			for (int j = 0; j < 2; j++) {
+				usedI1[i][j] = 999;
+			}
+		}
+		for (int i = 0; i < 100; i++) {
+			for (int j = 0; j < 30; j++) {
+				I1[i][j][0] = 999;
+				I1[i][j][1] = 999;
+			}
+		}
+		int indexI1 = 0;
+		int argsIndex = 0;
+		for (int i = 0; i < nr; i++) {
+			if (II[i][0] == 1000 && II[i][1] == 1000) {
+				continue;
+			} else {
+				if (matrixSearch(usedI1, II[i][0], II[i][1])) {
+					int P = 999;
+					for (int j = 0; j < nr; j++) {
+						if (II[i][0] == Ia1[j][0] && II[i][1] == Ia1[j][1]) {
+							if (P == 999) {
+								P = Ia1[j][2];
+								I1[indexI1][0][0] = Ia1[j][0];
+								I1[indexI1][0][1] = Ia1[j][1];
+							} else {
+								I1[indexI1][argsIndex][0] = P;
+								I1[indexI1][argsIndex][1] = Ia1[j][2];
+								P = Ia1[j][2];
+							}
+							argsIndex++;
+						}
+						if (II[i][0] == Ib2[j][0] && II[i][1] == Ib2[j][1]) {
+							if (P == 999) {
+								P = Ib2[j][2];
+								I1[indexI1][0][0] = Ib2[j][0];
+								I1[indexI1][0][1] = Ib2[j][1];
+							} else {
+								I1[indexI1][argsIndex][0] = P;
+								I1[indexI1][argsIndex][1] = Ib2[j][2];
+								P = Ib2[j][2];
+							}
+							argsIndex++;
+						}
+					}
+				}
+				usedI1[indexI1][0] = II[i][0];
+				usedI1[indexI1][1] = II[i][1];
+				argsIndex = 0;
+				indexI1++;
+			}
+		}
+	}
+
+	private static void createI2() {
+		int[][] usedI2 = new int[60][2];
+		int indexI2 = 0;
+		int argsIndex = 0;
+		for (int i = 0; i < nr; i++) {
+			if (JI[i][0] == 1000 && JI[i][1] == 1000) {
+				continue;
+			} else {
+				if (matrixSearch(usedI2, JI[i][0], JI[i][1])) {
+					int P = 0;
+					for (int j = 0; j < nr; j++) {
+						if (JI[i][0] == Ib1[j][0] && JI[i][1] == Ib1[j][1]) {
+							if (P == 0) {
+								P = Ib1[j][2];
+								I2[indexI2][0][0] = Ib1[j][0];
+								I2[indexI2][0][1] = Ib1[j][1];
+							} else {
+								I2[indexI2][argsIndex][0] = P;
+								I2[indexI2][argsIndex][1] = Ib1[j][2];
+								P = Ib1[j][2];
+							}
+							argsIndex++;
+						}
+						if (JI[i][0] == Ic2[j][0] && JI[i][1] == Ic2[j][1]) {
+							if (P == 0) {
+								P = Ic2[j][2];
+								I2[indexI2][0][0] = Ic2[j][0];
+								I2[indexI2][0][1] = Ic2[j][1];
+							} else {
+								I2[indexI2][argsIndex][0] = P;
+								I2[indexI2][argsIndex][1] = Ic2[j][2];
+								P = Ic2[j][2];
+							}
+							argsIndex++;
+						}
+					}
+				}
+				usedI2[indexI2][0] = JI[i][0];
+				usedI2[indexI2][1] = JI[i][1];
+				argsIndex = 0;
+				indexI2++;
+			}
+		}
+	}
+
 	private static void createI3() {
 		int[][] usedI3 = new int[60][2];
 		int indexI3 = 0;
-		int argsIndex = 2;
+		int argsIndex = 0;
 		for (int i = 0; i < nr; i++) {
 			if (JK[i][0] == 1000 && JK[i][1] == 1000) {
 				continue;
 			} else {
 				if (matrixSearch(usedI3, JK[i][0], JK[i][1])) {
+					int P = 0;
 					for (int j = 0; j < nr; j++) {
 						if (JK[i][0] == Ic1[j][0] && JK[i][1] == Ic1[j][1]) {
-							I3[indexI3][argsIndex] = Ic1[j][2];
+							if (P == 0) {
+								P = Ic1[j][2];
+								I3[indexI3][0][0] = Ic1[j][0];
+								I3[indexI3][0][1] = Ic1[j][1];
+							} else {
+								I3[indexI3][argsIndex][0] = P;
+								I3[indexI3][argsIndex][1] = Ic1[j][2];
+								P = Ic1[j][2];
+							}
 							argsIndex++;
-							I3[indexI3][0] = Ic1[j][0];
-							I3[indexI3][1] = Ic1[j][1];
 						}
 					}
 					usedI3[indexI3][0] = JK[i][0];
 					usedI3[indexI3][1] = JK[i][1];
-					if (argsIndex == 3) {
-						I3[indexI3][0] = 0;
-						I3[indexI3][1] = 0;
-						argsIndex = 2;
-					} else {
-						argsIndex = 2;
-						indexI3++;
-					}
+					argsIndex = 0;
+					indexI3++;
 				}
 			}
 		}
@@ -334,30 +478,31 @@ public class MainClass {
 	private static void createI4() {
 		int[][] usedI4 = new int[60][2];
 		int indexI4 = 0;
-		int argsIndex = 2;
+		int argsIndex = 0;
 		for (int i = 0; i < nr; i++) {
 			if (KI[i][0] == 1000 && KI[i][1] == 1000) {
 				continue;
 			} else {
 				if (matrixSearch(usedI4, KI[i][0], KI[i][1])) {
+					int P = 0;
 					for (int j = 0; j < nr; j++) {
 						if (KI[i][0] == Ic3[j][0] && KI[i][1] == Ic3[j][1]) {
-							I4[indexI4][argsIndex] = Ic3[j][2];
+							if (P == 0) {
+								P = Ic3[j][2];
+								I4[indexI4][0][0] = Ic3[j][0];
+								I4[indexI4][0][1] = Ic3[j][1];
+							} else {
+								I4[indexI4][argsIndex][0] = P;
+								I4[indexI4][argsIndex][1] = Ic3[j][2];
+								P = Ic3[j][2];
+							}
 							argsIndex++;
-							I4[indexI4][0] = Ic3[j][0];
-							I4[indexI4][1] = Ic3[j][1];
 						}
 					}
 					usedI4[indexI4][0] = KI[i][0];
 					usedI4[indexI4][1] = KI[i][1];
-					if (argsIndex == 3) {
-						I4[indexI4][0] = 0;
-						I4[indexI4][1] = 0;
-						argsIndex = 2;
-					} else {
-						argsIndex = 2;
-						indexI4++;
-					}
+					argsIndex = 0;
+					indexI4++;
 				}
 			}
 		}
@@ -365,43 +510,40 @@ public class MainClass {
 
 	private static void createI24() {
 		int[][] usedI24 = new int[60][2];
-		int indexI24 = 1;
-		int argsIndex = 2;
-		int firstVal = 0;
-		int firstIndex = 0;
+		int indexI24 = 0;
+		int argsIndex = 0;
 		for (int i = 0; i < nr; i++) {
 			if (JI[i][0] == 1000 && JI[i][1] == 1000) {
 				continue;
 			} else {
 				if (matrixSearch(usedI24, JI[i][0], JI[i][1])) {
+					int P = 0;
 					for (int j = 0; j < nr; j++) {
 						if (JI[i][0] == Ic3[j][0] && JI[i][1] == Ic3[j][1]) {
-							if (argsIndex == 2) {
-								for (int p = 0; p < Ib1.length; p++) {
-									if (JI[i][0] == Ib1[p][0] && JI[i][1] == Ib1[p][1]) {
-										firstVal = Ib1[p][2];
-										firstIndex = argsIndex;
-										argsIndex++;
+							if (P == 0) {
+								for (int k = 0; k < Ib1.length; k++) {
+									if (Ic3[j][0] == Ib1[k][0] && Ic3[j][1] == Ib1[k][1]) {
+										P = Ib1[k][2];
 										break;
 									}
 								}
+								I24[indexI24][0][0] = Ic3[j][0];
+								I24[indexI24][0][1] = Ic3[j][1];
+								argsIndex++;
+								I24[indexI24][argsIndex][0] = P;
+								I24[indexI24][argsIndex][1] = Ic3[j][2];
+							} else {
+								I24[indexI24][argsIndex][0] = P;
+								I24[indexI24][argsIndex][1] = Ic3[j][2];
+								P = Ic3[j][2];
 							}
-							I24[indexI24][argsIndex] = Ic3[j][2];
-							I24[indexI24][0] = Ic3[j][0];
-							I24[indexI24][1] = Ic3[j][1];
 							argsIndex++;
 						}
 					}
-					I24[indexI24][firstIndex] = firstVal;
 					usedI24[indexI24][0] = JI[i][0];
 					usedI24[indexI24][1] = JI[i][1];
-					if (argsIndex == 2) {
-						I24[indexI24][0] = 0;
-						I24[indexI24][1] = 0;
-					} else {
-						argsIndex = 2;
-						indexI24++;
-					}
+					argsIndex = 0;
+					indexI24++;
 				}
 			}
 		}
@@ -410,42 +552,40 @@ public class MainClass {
 	private static void createI34() {
 		int[][] usedI34 = new int[60][2];
 		int indexI34 = 0;
-		int argsIndex = 2;
-		int firstVal = 0;
-		int firstIndex = 0;
+		int argsIndex = 0;
 		for (int i = 0; i < nr; i++) {
 			if (JK[i][0] == 1000 && JK[i][1] == 1000) {
 				continue;
 			} else {
 				if (matrixSearch(usedI34, JK[i][0], JK[i][1])) {
+					int P = 0;
 					for (int j = 0; j < nr; j++) {
 						if (JK[i][0] == Ic3[j][0] && JK[i][1] == Ic3[j][1]) {
-							if (argsIndex == 2) {
-								for (int p = 0; p < Ic1.length; p++) {
-									if (JK[i][0] == Ic1[p][0] && JK[i][1] == Ic1[p][1]) {
-										firstVal = Ic1[p][2];
-										firstIndex = argsIndex;
-										argsIndex++;
+							if (P == 0) {
+								for (int k = 0; k < Ib1.length; k++) {
+									if (Ic3[j][0] == Ic1[k][0] && Ic3[j][1] == Ic1[k][1]) {
+										P = Ic1[k][2];
 										break;
 									}
 								}
+								I34[indexI34][0][0] = Ic3[j][0];
+								I34[indexI34][0][1] = Ic3[j][1];
+								argsIndex++;
+								I34[indexI34][argsIndex][0] = P;
+								I34[indexI34][argsIndex][1] = Ic3[j][2];
+							} else {
+								I34[indexI34][argsIndex][0] = P;
+								I34[indexI34][argsIndex][1] = Ic3[j][2];
+								P = Ic3[j][2];
+								//argsIndex++;
 							}
-							I34[indexI34][argsIndex] = Ic3[j][2];
-							I34[indexI34][0] = Ic3[j][0];
-							I34[indexI34][1] = Ic3[j][1];
 							argsIndex++;
 						}
 					}
-					I34[indexI34][firstIndex] = firstVal;
 					usedI34[indexI34][0] = JK[i][0];
 					usedI34[indexI34][1] = JK[i][1];
-					if (argsIndex == 2) {
-						I34[indexI34][0] = 0;
-						I34[indexI34][1] = 0;
-					} else {
-						argsIndex = 2;
-						indexI34++;
-					}
+					argsIndex = 0;
+					indexI34++;
 				}
 			}
 		}
@@ -461,32 +601,33 @@ public class MainClass {
 				continue;
 			} else {
 				if (matrixSearch(usedI23, JI[i][0], JI[i][1])) {
+					int P = 0;
 					for (int j = 0; j < nr; j++) {
 						if (JI[i][0] == Ic1[j][0] && JI[i][1] == Ic1[j][1]) {
-							if (argsIndex == 2) {
-								for (int p = 0; p < Ib1.length; p++) {
-									if (JI[i][0] == Ib1[p][0] && JI[i][1] == Ib1[p][1]) {
-										lastVal = Ib1[p][2];
+							if (P == 0) {
+								for (int k = 0; k < Ib1.length; k++) {
+									if (Ic1[j][0] == Ib1[k][0] && Ic1[j][1] == Ib1[k][1]) {
+										P = Ib1[k][2];
 										break;
 									}
 								}
+								I23[indexI23][0][0] = Ic1[j][0];
+								I23[indexI23][0][1] = Ic1[j][1];
+								argsIndex++;
+								I23[indexI23][argsIndex][1] = P;
+								I23[indexI23][argsIndex][0] = Ic1[j][2];
+							} else {
+								I23[indexI23][argsIndex][1] = P;
+								I23[indexI23][argsIndex][0] = Ic1[j][2];
+								P = Ic1[j][2];
 							}
-							I23[indexI23][argsIndex] = Ic1[j][2];
-							I23[indexI23][0] = Ic1[j][0];
-							I23[indexI23][1] = Ic1[j][1];
 							argsIndex++;
 						}
 					}
-					I23[indexI23][argsIndex] = lastVal;
 					usedI23[indexI23][0] = JI[i][0];
 					usedI23[indexI23][1] = JI[i][1];
-					if (argsIndex == 2) {
-						I23[indexI23][0] = 0;
-						I23[indexI23][1] = 0;
-					} else {
-						argsIndex = 2;
-						indexI23++;
-					}
+					argsIndex = 0;
+					indexI23++;
 				}
 			}
 		}
@@ -496,49 +637,112 @@ public class MainClass {
 		int[][] usedI13 = new int[60][2];
 		int indexI13 = 1;
 		int argsIndex = 2;
-		int lastVal = 0;
+		int lastP = 0;
 		for (int i = 0; i < nr; i++) {
 			if (II[i][0] == 1000 && II[i][1] == 1000) {
 				continue;
 			} else {
 				if (matrixSearch(usedI13, II[i][0], II[i][1])) {
+					int P = 0;
 					for (int j = 0; j < nr; j++) {
 						if (II[i][0] == Ic1[j][0] && II[i][1] == Ic1[j][1]) {
-							if (argsIndex == 2) {
-								for (int p = 0; p < Ia1.length; p++) {
-									if (II[i][0] == Ia1[p][0] && II[i][0] == Ia1[p][1]) {
-										lastVal = Ia1[p][2];
+							if (P == 0) {
+								for (int k = 0; k < Ia1.length; k++) {
+									if (Ic1[j][0] == Ia1[k][0] && Ic1[j][1] == Ia1[k][1]) {
+										P = Ia1[k][2];
+										if (P == 333) {
+											lastP = P;
+										}
 										break;
 									}
 								}
+								I13[indexI13][0][0] = Ic1[j][0];
+								I13[indexI13][0][1] = Ic1[j][1];
+								argsIndex++;
+								I13[indexI13][argsIndex][1] = P;
+								I13[indexI13][argsIndex][0] = Ic1[j][2];
+							} else {
+								I13[indexI13][argsIndex][1] = P;
+								I13[indexI13][argsIndex][0] = Ic1[j][2];
+								P = Ic1[j][2];
 							}
-							I13[indexI13][argsIndex] = Ic1[j][2];
-							I13[indexI13][0] = Ic1[j][0];
-							I13[indexI13][1] = Ic1[j][1];
 							argsIndex++;
 						}
 					}
-					I13[indexI13][argsIndex] = lastVal;
+					if (i == nr-1) {
+						I13[indexI13][argsIndex][1] = lastP;
+						I13[indexI13][argsIndex][0] = P;
+					}
 					usedI13[indexI13][0] = II[i][0];
 					usedI13[indexI13][1] = II[i][1];
-					if (argsIndex == 2) {
-						I13[indexI13][0] = 0;
-						I13[indexI13][1] = 0;
-					} else {
-						argsIndex = 2;
-						indexI13++;
-					}
+					argsIndex = 0;
+					indexI13++;
 				}
 			}
 		}
 	}
 
+	private static void showWezlyI1() {
+		for (int i = 0; i < 100; i++) {
+			for (int j = 0; j < 30; j++) {
+				if (I1[i][j][0] == 999 || I1[i][j][1] == 999) {
+					continue;
+				} else {
+					System.out.format("I1 : %d %d : ", I1[i][j][0], I1[i][j][1]);
+					j+=28;
+					for (int k = 1; k < 30; k++) {
+						if (I1[i][k][0] == 999 || I1[i][k][1] == 999)  {
+							continue;
+						} else {
+							System.out.format("[%d %d] ", I1[i][k][0], I1[i][k][1]);
+						}
+					}
+					System.out.println();
+				}
+			}
+		}
+		System.out.println();
+	}
+
+	private static void showWezlyI2() {
+		for (int i = 0; i < 100; i++) {
+			for (int j = 0; j < 30; j++) {
+				if (I2[i][j][0] == 0 && I2[i][j][1] == 0) {
+					continue;
+				} else {
+					System.out.format("I2 : %d %d : ", I2[i][j][0], I2[i][j][1]);
+					j+=28;
+					for (int k = 1; k < 30; k++) {
+						if (I2[i][k][0] == 0 && I2[i][k][1] == 0)  {
+							continue;
+						} else {
+							System.out.format("[%d %d] ", I2[i][k][0], I2[i][k][1]);
+						}
+					}
+					System.out.println();
+				}
+			}
+		}
+		System.out.println();
+	}
+
 	private static void showWezlyI3() {
 		for (int i = 0; i < 100; i++) {
-			if (I3[i][0] == 0) {
-				continue;
-			} else {
-				System.out.format("I3 : %d %d : %d %d %d\n",I3[i][0], I3[i][1], I3[i][2], I3[i][3], I3[i][4]);
+			for (int j = 0; j < 30; j++) {
+				if (I3[i][j][0] == 0 && I3[i][j][1] == 0) {
+					continue;
+				} else {
+					System.out.format("I3 : %d %d : ", I3[i][j][0], I3[i][j][1]);
+					j+=28;
+					for (int k = 1; k < 30; k++) {
+						if (I3[i][k][0] == 0 && I3[i][k][1] == 0)  {
+							continue;
+						} else {
+							System.out.format("[%d %d] ", I3[i][k][0], I3[i][k][1]);
+						}
+					}
+					System.out.println();
+				}
 			}
 		}
 		System.out.println();
@@ -546,10 +750,21 @@ public class MainClass {
 
 	private static void showWezlyI4() {
 		for (int i = 0; i < 100; i++) {
-			if (I4[i][0] == 0) {
-				continue;
-			} else {
-				System.out.format("I4 : %d %d : %d %d %d\n",I4[i][0], I4[i][1], I4[i][2], I4[i][3], I4[i][4]);
+			for (int j = 0; j < 30; j++) {
+				if (I4[i][j][0] == 0 && I4[i][j][1] == 0) {
+					continue;
+				} else {
+					System.out.format("I4 : %d %d : ", I4[i][j][0], I4[i][j][1]);
+					j+=28;
+					for (int k = 1; k < 30; k++) {
+						if (I4[i][k][0] == 0 && I4[i][k][1] == 0)  {
+							continue;
+						} else {
+							System.out.format("[%d %d] ", I4[i][k][0], I4[i][k][1]);
+						}
+					}
+					System.out.println();
+				}
 			}
 		}
 		System.out.println();
@@ -557,10 +772,21 @@ public class MainClass {
 
 	private static void showWezlyI34() {
 		for (int i = 0; i < 100; i++) {
-			if (I34[i][0] == 0) {
-				continue;
-			} else {
-				System.out.format("I34 : %d %d : %d %d %d %d\n", I34[i][0], I34[i][1], I34[i][2], I34[i][3], I34[i][4], I34[i][5]);
+			for (int j = 0; j < 30; j++) {
+				if (I34[i][j][0] == 0 && I34[i][j][1] == 0) {
+					continue;
+				} else {
+					System.out.format("I34 : %d %d : ", I34[i][j][0], I34[i][j][1]);
+					j+=28;
+					for (int k = 1; k < 30; k++) {
+						if (I34[i][k][0] == 0 && I34[i][k][1] == 0)  {
+							continue;
+						} else {
+							System.out.format("[%d %d] ", I34[i][k][0], I34[i][k][1]);
+						}
+					}
+					System.out.println();
+				}
 			}
 		}
 		System.out.println();
@@ -568,10 +794,21 @@ public class MainClass {
 
 	private static void showWezlyI24() {
 		for (int i = 0; i < 100; i++) {
-			if (I24[i][0] == 0) {
-				continue;
-			} else {
-				System.out.format("I24 : %d %d : %d %d %d %d\n", I24[i][0], I24[i][1], I24[i][2], I24[i][3], I24[i][4], I24[i][5]);
+			for (int j = 0; j < 30; j++) {
+				if (I24[i][j][0] == 0 && I24[i][j][1] == 0) {
+					continue;
+				} else {
+					System.out.format("I24 : %d %d : ", I24[i][j][0], I24[i][j][1]);
+					j+=28;
+					for (int k = 1; k < 30; k++) {
+						if (I24[i][k][0] == 0 && I24[i][k][1] == 0)  {
+							continue;
+						} else {
+							System.out.format("[%d %d] ", I24[i][k][0], I24[i][k][1]);
+						}
+					}
+					System.out.println();
+				}
 			}
 		}
 		System.out.println();
@@ -579,10 +816,21 @@ public class MainClass {
 
 	private static void showWezlyI23() {
 		for (int i = 0; i < 100; i++) {
-			if (I23[i][0] == 0) {
-				continue;
-			} else {
-				System.out.format("I23 : %d %d : %d %d %d %d\n", I23[i][0], I23[i][1], I23[i][2], I23[i][3], I23[i][4], I23[i][5]);
+			for (int j = 0; j < 30; j++) {
+				if (I23[i][j][0] == 0 && I23[i][j][1] == 0) {
+					continue;
+				} else {
+					System.out.format("I23 : %d %d : ", I23[i][j][0], I23[i][j][1]);
+					j+=28;
+					for (int k = 1; k < 30; k++) {
+						if (I23[i][k][0] == 0 && I34[i][k][1] == 0)  {
+							continue;
+						} else {
+							System.out.format("[%d %d] ", I23[i][k][0], I23[i][k][1]);
+						}
+					}
+					System.out.println();
+				}
 			}
 		}
 		System.out.println();
@@ -590,10 +838,21 @@ public class MainClass {
 
 	private static void showWezlyI13() {
 		for (int i = 0; i < 100; i++) {
-			if (I13[i][0] == 0) {
-				continue;
-			} else {
-				System.out.format("I13 : %d %d : %d %d %d %d\n", I13[i][0], I13[i][1], I13[i][2], I13[i][3], I13[i][4], I13[i][5]);
+			for (int j = 0; j < 30; j++) {
+				if (I13[i][j][0] == 0 && I13[i][j][1] == 0) {
+					continue;
+				} else {
+					System.out.format("I13 : %d %d : ", I13[i][j][0], I13[i][j][1]);
+					j+=28;
+					for (int k = 1; k < 30; k++) {
+						if (I13[i][k][0] == 0 && I13[i][k][1] == 0)  {
+							continue;
+						} else {
+							System.out.format("[%d %d] ", I13[i][k][0], I13[i][k][1]);
+						}
+					}
+					System.out.println();
+				}
 			}
 		}
 		System.out.println();
