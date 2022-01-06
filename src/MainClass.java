@@ -15,6 +15,10 @@ public class MainClass {
 	private static int[][] JI;
 	private static int[][] JK;
 	private static int[][] KI;
+	private static int[][] EP1, EP2, EP3;
+	private static int[][] Fs1, Fs2;
+	private static int[] Fs3, Ft;
+	private static int[][] EP11;
 	private static int[][][] I1;
 	private static int[][][] I2;
 	private static int[][][] I3;
@@ -42,12 +46,35 @@ public class MainClass {
 		Z2 = new int[100];
 		Z3 = new int[100];
 		V1 = new int[200];
+		Fs1 = new int[2][3];
+		Fs1[0][0] = 1;
+		Fs1[0][1] = 1;
+		Fs1[0][2] = 0;
+		Fs1[1][0] = 0;
+		Fs1[1][1] = 1;
+		Fs1[1][2] = 0;
+		Fs2 = new int[2][3];
+		Fs2[0][0] = 1;
+		Fs2[0][1] = 0;
+		Fs2[0][2] = 1;
+		Fs2[1][0] = -1;
+		Fs2[1][1] = 1;
+		Fs2[1][2] = 0;
+		Fs3 = new int[3];
+		Fs3[0] = 1;
+		Ft = new int[3];
+		Ft[0] = 1;
+		Ft[1] = 1;
+		Ft[2] = 1;
 		Ic1 = new int[100][4];
 		Ic2 = new int[100][4];
 		Ic3 = new int[100][4];
 		Ib1 = new int[100][4];
 		Ib2 = new int[100][4];
 		Ia1 = new int[100][4];
+		EP1 = new int[100][4];
+		EP2 = new int[100][4];
+		EP3 = new int[100][4];
 		I1 = new int[100][30][2];
 		I2 = new int[100][30][2];
 		I3 = new int[100][30][2];
@@ -81,9 +108,9 @@ public class MainClass {
 		choleskyGrafPart1(input);
 		choleskyGrafPart2(input);
 		choleskyGrafPart3(input);
-		showCholeskyGrafPart1();
-		showCholeskyGrafPart2();
-		showCholeskyGrafPart3();
+		//showCholeskyGrafPart1();
+		//showCholeskyGrafPart2();
+		//showCholeskyGrafPart3();
 		choleskyGrafMixTogether();
 		showMix();
 		showWezlyI1();
@@ -94,6 +121,12 @@ public class MainClass {
 		showWezlyI24();
 		showWezlyI23();
 		showWezlyI13();
+		fillEP1();
+		showEP1();
+		fillEP2();
+		showEP2();
+		fillEP3();
+		showEP3();
 	}
 
 	private static void fillMatrix(int N) {
@@ -885,6 +918,123 @@ public class MainClass {
 			System.out.format("%d	%d	%d	%d\t\t%d %d\t\t%d %d\t\t%d %d		sub(multiply)\n",nr, W1[nr], W2[nr], W3[nr],
 					Ic1[nr][0], Ic1[nr][1], Ic2[nr][0], Ic2[nr][1], Ic3[nr][0], Ic3[nr][1]);
 			nr++;
+		}
+	}
+
+	private static void fillEP1() {
+		int setne, dziesietne,jednosci;
+		EP1[0][0] = V2[0];
+		EP1[0][1] = V2[0];
+		for (int i = 1; i < V2.length; i++) {
+			setne = V2[i]/100;
+			dziesietne = V2[i]/10 - setne*10;
+			jednosci = V2[i] - setne*100 - dziesietne*10;
+			for (int j = 0; j < 2; j++) {
+				EP1[i][j] = setne * Fs1[j][0] + dziesietne * Fs1[j][1] + jednosci * Fs1[j][2];
+			}
+			EP1[i][2] = setne * Ft[0] + dziesietne * Ft[1] + jednosci * Ft[2];
+		}
+	}
+
+	private static void sortEP1() {
+		EP11 = new int[2][V2.length];
+		int[] index = new int[V2.length];
+		int[] EP111 = new int[V2.length];
+		for (int i = 0; i < V2.length; i++) {
+			EP11[0][i] = i;
+			EP11[1][i] = EP1[i][0] * 10 + EP1[i][1];
+			EP111[i] = EP1[i][0] * 10 + EP1[i][1];
+		}
+		Arrays.sort(EP111, 0, EP111.length);
+
+		for (int i = 0; i < V2.length; i++) {
+			if (EP11[1][i] == EP111[i]) {
+				for (int j = 0; j < index.length; j++) {
+				}
+				index[i] = i;
+			}
+			System.out.print(EP11[0][i] + "\t\t" + EP11[1][i] + "\t\t" + EP111[i] + "\n");
+		}
+	}
+
+	private static void fillEP2() {
+		int setne, dziesietne,jednosci;
+		EP2[0][0] = V2[0];
+		EP2[0][1] = V2[0];
+		for (int i = 1; i < V2.length; i++) {
+			setne = V2[i]/100;
+			dziesietne = V2[i]/10 - setne*10;
+			jednosci = V2[i] - setne*100 - dziesietne*10;
+			for (int j = 0; j < 2; j++) {
+				EP2[i][j] = setne * Fs2[j][0] + dziesietne * Fs2[j][1] + jednosci * Fs2[j][2];
+			}
+			EP2[i][2] = setne * Ft[0] + dziesietne * Ft[1] + jednosci * Ft[2];
+		}
+	}
+
+	private static void fillEP3() {
+		int setne, dziesietne,jednosci;
+		EP3[0][0] = V2[0];
+		EP3[0][1] = V2[0];
+		for (int i = 1; i < V2.length; i++) {
+			setne = V2[i]/100;
+			dziesietne = V2[i]/10 - setne*10;
+			jednosci = V2[i] - setne*100 - dziesietne*10;
+			EP3[i][1] = setne * Fs3[0] + dziesietne * Fs3[1] + jednosci * Fs3[2];
+			EP3[i][2] = setne * Ft[0] + dziesietne * Ft[1] + jednosci * Ft[2];
+		}
+	}
+
+	private static void showEP1() {
+		System.out.println("nr		EP1.1	EP1.2	takt");
+		for (int i = 0; i < EP1.length; i++) {
+			if (EP1[i][0] == 0 && EP1[i][1] == 0 && i != 0) {
+				//continue;
+			} else {
+				System.out.print(i);
+				System.out.print("		");
+				System.out.print(EP1[i][0]);
+				System.out.print("		");
+				System.out.print(EP1[i][1]);
+				System.out.print("		");
+				System.out.println(EP1[i][2]);
+			}
+		}
+	}
+
+	private static void showEP2() {
+		System.out.println("nr		EP2.1	EP2.2	takt");
+		for (int i = 0; i < EP2.length; i++) {
+			if (EP2[i][0] == 0 && EP2[i][1] == 0 && i != 0) {
+				//continue;
+			} else {
+				System.out.print(i);
+				System.out.print("		");
+				System.out.print(EP2[i][0]);
+				System.out.print("		");
+				System.out.print(EP2[i][1]);
+				System.out.print("		");
+				System.out.println(EP2[i][2]);
+			}
+		}
+	}
+
+	private static void showEP3() {
+		boolean pass0 = false;
+		System.out.println("nr		EP3.1		takt");
+		for (int i = 0; i < EP3.length; i++) {
+			if (EP3[i][1] == 0 && pass0) {
+				continue;
+			} else {
+				System.out.print(i);
+				System.out.print("		");
+				System.out.print(EP3[i][1]);
+				System.out.print("			");
+				System.out.println(EP3[i][2]);
+			}
+			if (EP3[i][1] == 1) {
+				pass0 = true;
+			}
 		}
 	}
 
