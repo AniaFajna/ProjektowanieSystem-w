@@ -1,8 +1,9 @@
+import javax.swing.*;
 import java.util.*;
 
 public class MainClass {
 
-	private static long[][] A, L, Lt, M;
+	private static long[][] A, AA, L, Lt, M;
 	private static int nr, XLength, ZLength, WLength;
 	private static int[] W1, W2, W3, Z1, Z2, Z3, X1, X2, X3, V1, V2, operat;
 	private static int[][] Ic1;
@@ -18,7 +19,6 @@ public class MainClass {
 	private static int[][] EP1, EP2, EP3;
 	private static int[][] Fs1, Fs2;
 	private static int[] Fs3, Ft;
-	private static int[][] EP11;
 	private static int[][][] I1;
 	private static int[][][] I2;
 	private static int[][][] I3;
@@ -28,24 +28,25 @@ public class MainClass {
 	private static int[][][] I23;
 	private static String[] options;
 	private static int[][][] I24;
+	private static int EP1Index, EP2Index, EP3Index;
+	private static double srEP1, srEP2, srEP3;
 
-	public static void main(String[] args) {
-		Scanner in = new Scanner(System.in);
-		int input = in.nextInt();
+	public MainClass(int input) {
 		A = new long[input][input];
+		AA = new long[input][input];
 		L = new long[input][input];
 		Lt = new long[input][input];
 		M = new long[input][input];
-		X1 = new int[100];
-		X2 = new int[100];
-		X3 = new int[100];
-		W1 = new int[100];
-		W2 = new int[100];
-		W3 = new int[100];
-		Z1 = new int[100];
-		Z2 = new int[100];
-		Z3 = new int[100];
-		V1 = new int[200];
+		X1 = new int[2000];
+		X2 = new int[2000];
+		X3 = new int[2000];
+		W1 = new int[2000];
+		W2 = new int[2000];
+		W3 = new int[2000];
+		Z1 = new int[2000];
+		Z2 = new int[2000];
+		Z3 = new int[2000];
+		V1 = new int[2000];
 		Fs1 = new int[2][3];
 		Fs1[0][0] = 1;
 		Fs1[0][1] = 1;
@@ -66,39 +67,37 @@ public class MainClass {
 		Ft[0] = 1;
 		Ft[1] = 1;
 		Ft[2] = 1;
-		Ic1 = new int[100][4];
-		Ic2 = new int[100][4];
-		Ic3 = new int[100][4];
-		Ib1 = new int[100][4];
-		Ib2 = new int[100][4];
-		Ia1 = new int[100][4];
-		EP1 = new int[100][4];
-		EP2 = new int[100][4];
-		EP3 = new int[100][4];
-		I1 = new int[100][30][2];
-		I2 = new int[100][30][2];
-		I3 = new int[100][30][2];
-		I4 = new int[100][30][2];
-		I13 = new int[100][30][2];
-		I23 = new int[100][30][2];
-		I24 = new int[100][30][2];
-		I34 = new int[100][30][2];
+		Ic1 = new int[2000][4];
+		Ic2 = new int[2000][4];
+		Ic3 = new int[2000][4];
+		Ib1 = new int[2000][4];
+		Ib2 = new int[2000][4];
+		Ia1 = new int[2000][4];
+		EP1 = new int[2000][4];
+		EP2 = new int[2000][4];
+		EP3 = new int[2000][4];
+		I1 = new int[2000][500][2];
+		I2 = new int[2000][500][2];
+		I3 = new int[2000][500][2];
+		I4 = new int[2000][500][2];
+		I13 = new int[2000][500][2];
+		I23 = new int[2000][500][2];
+		I24 = new int[2000][500][2];
+		I34 = new int[2000][500][2];
 		options = new String[3];
 		options[0] = "sqrt";
 		options[1] = "div";
 		options[2] = "sub(multiply)";
+		EP1Index = 0;
+		EP2Index = 0;
+		srEP1 = 0;
+		srEP2 = 0;
+		srEP3 = 0;
 
 		fillMatrix(input);
 		//showMatrix(input, A);
 
-		//long start = System.nanoTime();
-		choleskyAlgorithm(input);
-		//long finish = System.nanoTime();
-		//long timeElapsed = finish - start;
-
-		setTriangleMatrix(input);
-		transposeLMatrix(input);
-		multiplyMatrix(input);
+		choleskyAlgorithm(input, AA);
 
 		//showMatrix(input, L);
 		//showMatrix(input, Lt);
@@ -112,21 +111,23 @@ public class MainClass {
 		//showCholeskyGrafPart2();
 		//showCholeskyGrafPart3();
 		choleskyGrafMixTogether();
-		showMix();
-		showWezlyI1();
-		showWezlyI2();
-		showWezlyI3();
-		showWezlyI4();
-		showWezlyI34();
-		showWezlyI24();
-		showWezlyI23();
-		showWezlyI13();
+		//showMix();
+		//showMix();
+		//showWezlyI1();
+		//showWezlyI2();
+		//showWezlyI3();
+		//showWezlyI4();
+		//showWezlyI34();
+		//showWezlyI24();
+		//showWezlyI23();
+		//showWezlyI13();
 		fillEP1();
-		showEP1();
+		//showEP1();
 		fillEP2();
-		showEP2();
+		//showEP2();
 		fillEP3();
-		showEP3();
+		calculateSrEP();
+		//showEP3();
 	}
 
 	private static void fillMatrix(int N) {
@@ -134,24 +135,16 @@ public class MainClass {
 			for(int j = 0; j < N; j++) {
 				A[j][i] = j+1;
 				A[i][j] = A[j][i];
+				AA[j][i] = j+1;
+				AA[i][j] = AA[j][i];
 			}
 		}
 	}
 
-	private static void showMatrix(int N, long[][] matrix) {
-		for(int i = 0; i < N; i++) {
-			for(int j = 0; j < N; j++) {
-				System.out.print(matrix[i][j] + "\t");
-			}
-			System.out.println("");
-		}
-		System.out.println("");
-	}
-
-	private static void choleskyAlgorithm(int N) {
+	private static void choleskyAlgorithm(int N, long[][] A) {
 		for (int i = 0; i < N; i++) {
 			A[i][i] = (long) Math.sqrt(A[i][i]);
-			for (int j = i+1; j < N; j++) {
+			for (int j = i; j < N; j++) {
 				A[j][i] = A[j][i]/A[i][i];
 			}
 			for (int j = i+1; j < N; j++) {
@@ -163,7 +156,7 @@ public class MainClass {
 	}
 
 	private static void choleskyGrafPart1(int N) {
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < 2000; i++) {
 			for (int j = 0; j < 4; j++) {
 				Ia1[i][j] = 999;
 			}
@@ -189,7 +182,7 @@ public class MainClass {
 	}
 
 	private static void choleskyGrafPart2(int N) {
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < 2000; i++) {
 			for (int j = 0; j < 4; j++) {
 				Ib2[i][j] = 999;
 			}
@@ -283,8 +276,8 @@ public class MainClass {
 					operat[i] = Ib2[j][3];
 					break;
 				} else {
-					II[i][0] = 1000;
-					II[i][1] = 1000;
+					II[i][0] = -2;
+					II[i][1] = -2;
 				}
 			}
 			for (int j = 0; j < WLength; j++) {
@@ -299,8 +292,8 @@ public class MainClass {
 					operat[i] = Ic2[j][3];
 					break;
 				} else {
-					JI[i][0] = 1000;
-					JI[i][1] = 1000;
+					JI[i][0] = -2;
+					JI[i][1] = -2;
 				}
 			}
 			for (int j = 0; j < WLength; j++) {
@@ -310,8 +303,8 @@ public class MainClass {
 					operat[i] = Ic1[j][3];
 					break;
 				} else {
-					JK[i][0] = 1000;
-					JK[i][1] = 1000;
+					JK[i][0] = -2;
+					JK[i][1] = -2;
 				}
 			}
 			for (int j = 0; j < WLength; j++) {
@@ -321,8 +314,8 @@ public class MainClass {
 					operat[i] = Ic3[j][3];
 					break;
 				} else {
-					KI[i][0] = 1000;
-					KI[i][1] = 1000;
+					KI[i][0] = -2;
+					KI[i][1] = -2;
 				}
 			}
 		}
@@ -345,59 +338,59 @@ public class MainClass {
 		return true;
 	}
 
-	private static void showMix() {
-		System.out.println();
-		System.out.println("nr	V		 I1		I2		I3		I4");
+	public void showMix(JTextArea area) {
+		area.append("\n");
+		area.append("   nr	V	I1	I2	I3	I4\n");
 		for (int i = 0; i < V2.length; i++) {
-			System.out.print(i + "\t" + V2[i] + "\t\t");
-			if (II[i][0] == 1000 || II[i][1] == 1000) {
-				System.out.print("x x\t\t");
+			area.append("   " + i + "\t" + V2[i] + "\t");
+			if (II[i][0] == -2 || II[i][1] == -2) {
+				area.append("x x\t");
 			} else {
-				System.out.format("%d %d		", II[i][0], II[i][1]);
+				area.append(String.format("%d %d	", II[i][0], II[i][1]));
 			}
-			if (JI[i][0] == 1000 || JI[i][1] == 1000) {
-				System.out.print("x x\t\t");
+			if (JI[i][0] == -2 || JI[i][1] == -2) {
+				area.append("x x\t");
 			} else {
-				System.out.format("%d %d		", JI[i][0], JI[i][1]);
+				area.append(String.format("%d %d	", JI[i][0], JI[i][1]));
 			}
-			if (JK[i][0] == 1000 || JK[i][1] == 1000) {
-				System.out.print("x x\t\t");
+			if (JK[i][0] == -2 || JK[i][1] == -2) {
+				area.append("x x\t");
 			} else {
-				System.out.format("%d %d\t\t", JK[i][0], JK[i][1]);
+				area.append(String.format("%d %d\t", JK[i][0], JK[i][1]));
 			}
-			if (KI[i][0] == 1000 || KI[i][1] == 1000) {
-				System.out.print("x x\t\t");
+			if (KI[i][0] == -2 || KI[i][1] == -2) {
+				area.append("x x\t");
 			} else {
-				System.out.format("%d %d\t\t", KI[i][0], KI[i][1]);
+				area.append(String.format("%d %d\t", KI[i][0], KI[i][1]));
 			}
-			System.out.format("%s\n", options[operat[i]]);
+			area.append(String.format("%s\n", options[operat[i]]));
 		}
 	}
 
 	private static void createI1() {
-		int[][] usedI1 = new int[60][2];
-		for (int i = 0; i < 60; i++) {
+		int[][] usedI1 = new int[6000][2];
+		for (int i = 0; i < 6000; i++) {
 			for (int j = 0; j < 2; j++) {
-				usedI1[i][j] = 999;
+				usedI1[i][j] = -1;
 			}
 		}
-		for (int i = 0; i < 100; i++) {
-			for (int j = 0; j < 30; j++) {
-				I1[i][j][0] = 999;
-				I1[i][j][1] = 999;
+		for (int i = 0; i < 2000; i++) {
+			for (int j = 0; j < 500; j++) {
+				I1[i][j][0] = -1;
+				I1[i][j][1] = -1;
 			}
 		}
 		int indexI1 = 0;
 		int argsIndex = 0;
 		for (int i = 0; i < nr; i++) {
-			if (II[i][0] == 1000 && II[i][1] == 1000) {
+			if (II[i][0] == -2 && II[i][1] == -2) {
 				continue;
 			} else {
 				if (matrixSearch(usedI1, II[i][0], II[i][1])) {
-					int P = 999;
+					int P = -1;
 					for (int j = 0; j < nr; j++) {
 						if (II[i][0] == Ia1[j][0] && II[i][1] == Ia1[j][1]) {
-							if (P == 999) {
+							if (P == -1) {
 								P = Ia1[j][2];
 								I1[indexI1][0][0] = Ia1[j][0];
 								I1[indexI1][0][1] = Ia1[j][1];
@@ -409,7 +402,7 @@ public class MainClass {
 							argsIndex++;
 						}
 						if (II[i][0] == Ib2[j][0] && II[i][1] == Ib2[j][1]) {
-							if (P == 999) {
+							if (P == -1) {
 								P = Ib2[j][2];
 								I1[indexI1][0][0] = Ib2[j][0];
 								I1[indexI1][0][1] = Ib2[j][1];
@@ -431,11 +424,11 @@ public class MainClass {
 	}
 
 	private static void createI2() {
-		int[][] usedI2 = new int[60][2];
+		int[][] usedI2 = new int[6000][2];
 		int indexI2 = 0;
 		int argsIndex = 0;
 		for (int i = 0; i < nr; i++) {
-			if (JI[i][0] == 1000 && JI[i][1] == 1000) {
+			if (JI[i][0] == -2 && JI[i][1] == -2) {
 				continue;
 			} else {
 				if (matrixSearch(usedI2, JI[i][0], JI[i][1])) {
@@ -476,7 +469,7 @@ public class MainClass {
 	}
 
 	private static void createI3() {
-		int[][] usedI3 = new int[60][2];
+		int[][] usedI3 = new int[6000][2];
 		int indexI3 = 0;
 		int argsIndex = 0;
 		for (int i = 0; i < nr; i++) {
@@ -509,7 +502,7 @@ public class MainClass {
 	}
 
 	private static void createI4() {
-		int[][] usedI4 = new int[60][2];
+		int[][] usedI4 = new int[6000][2];
 		int indexI4 = 0;
 		int argsIndex = 0;
 		for (int i = 0; i < nr; i++) {
@@ -542,7 +535,7 @@ public class MainClass {
 	}
 
 	private static void createI24() {
-		int[][] usedI24 = new int[60][2];
+		int[][] usedI24 = new int[6000][2];
 		int indexI24 = 0;
 		int argsIndex = 0;
 		for (int i = 0; i < nr; i++) {
@@ -583,7 +576,7 @@ public class MainClass {
 	}
 
 	private static void createI34() {
-		int[][] usedI34 = new int[60][2];
+		int[][] usedI34 = new int[6000][2];
 		int indexI34 = 0;
 		int argsIndex = 0;
 		for (int i = 0; i < nr; i++) {
@@ -625,7 +618,7 @@ public class MainClass {
 	}
 
 	private static void createI23() {
-		int[][] usedI23 = new int[60][2];
+		int[][] usedI23 = new int[6000][2];
 		int indexI23 = 1;
 		int argsIndex = 2;
 		int lastVal = 0;
@@ -667,7 +660,7 @@ public class MainClass {
 	}
 
 	private static void createI13() {
-		int[][] usedI13 = new int[60][2];
+		int[][] usedI13 = new int[6000][2];
 		int indexI13 = 1;
 		int argsIndex = 2;
 		int lastP = 0;
@@ -715,180 +708,181 @@ public class MainClass {
 		}
 	}
 
-	private static void showWezlyI1() {
-		for (int i = 0; i < 100; i++) {
-			for (int j = 0; j < 30; j++) {
-				if (I1[i][j][0] == 999 || I1[i][j][1] == 999) {
+	public void showWezlyI1(JTextArea area) {
+		area.append("\n");
+		for (int i = 0; i < 2000; i++) {
+			for (int j = 0; j < 500; j++) {
+				if (I1[i][j][0] == -1 || I1[i][j][1] == -1) {
 					continue;
 				} else {
-					System.out.format("I1 : %d %d : ", I1[i][j][0], I1[i][j][1]);
+					area.append(String.format(" I1 : %d %d : ", I1[i][j][0], I1[i][j][1]));
 					j+=28;
 					for (int k = 1; k < 30; k++) {
-						if (I1[i][k][0] == 999 || I1[i][k][1] == 999)  {
+						if (I1[i][k][0] == -1 || I1[i][k][1] == -1)  {
 							continue;
 						} else {
-							System.out.format("[%d %d] ", I1[i][k][0], I1[i][k][1]);
+							area.append(String.format("[%d %d] ", I1[i][k][0], I1[i][k][1]));
 						}
 					}
-					System.out.println();
+					area.append("\n");
 				}
 			}
 		}
-		System.out.println();
+		area.append("\n");
 	}
 
-	private static void showWezlyI2() {
-		for (int i = 0; i < 100; i++) {
-			for (int j = 0; j < 30; j++) {
+	public void showWezlyI2(JTextArea area) {
+		for (int i = 0; i < 2000; i++) {
+			for (int j = 0; j < 500; j++) {
 				if (I2[i][j][0] == 0 && I2[i][j][1] == 0) {
 					continue;
 				} else {
-					System.out.format("I2 : %d %d : ", I2[i][j][0], I2[i][j][1]);
+					area.append(String.format("I2 : %d %d : ", I2[i][j][0], I2[i][j][1]));
 					j+=28;
 					for (int k = 1; k < 30; k++) {
 						if (I2[i][k][0] == 0 && I2[i][k][1] == 0)  {
 							continue;
 						} else {
-							System.out.format("[%d %d] ", I2[i][k][0], I2[i][k][1]);
+							area.append(String.format("[%d %d] ", I2[i][k][0], I2[i][k][1]));
 						}
 					}
-					System.out.println();
+					area.append("\n");
 				}
 			}
 		}
-		System.out.println();
+		area.append("\n");
 	}
 
-	private static void showWezlyI3() {
-		for (int i = 0; i < 100; i++) {
-			for (int j = 0; j < 30; j++) {
+	public void showWezlyI3(JTextArea area) {
+		for (int i = 0; i < 2000; i++) {
+			for (int j = 0; j < 500; j++) {
 				if (I3[i][j][0] == 0 && I3[i][j][1] == 0) {
 					continue;
 				} else {
-					System.out.format("I3 : %d %d : ", I3[i][j][0], I3[i][j][1]);
+					area.append(String.format(" I3 : %d %d : ", I3[i][j][0], I3[i][j][1]));
 					j+=28;
 					for (int k = 1; k < 30; k++) {
 						if (I3[i][k][0] == 0 && I3[i][k][1] == 0)  {
 							continue;
 						} else {
-							System.out.format("[%d %d] ", I3[i][k][0], I3[i][k][1]);
+							area.append(String.format("[%d %d] ", I3[i][k][0], I3[i][k][1]));
 						}
 					}
-					System.out.println();
+					area.append("\n");
 				}
 			}
 		}
-		System.out.println();
+		area.append("\n");
 	}
 
-	private static void showWezlyI4() {
-		for (int i = 0; i < 100; i++) {
-			for (int j = 0; j < 30; j++) {
+	public void showWezlyI4(JTextArea area) {
+		for (int i = 0; i < 2000; i++) {
+			for (int j = 0; j < 500; j++) {
 				if (I4[i][j][0] == 0 && I4[i][j][1] == 0) {
 					continue;
 				} else {
-					System.out.format("I4 : %d %d : ", I4[i][j][0], I4[i][j][1]);
+					area.append(String.format(" I4 : %d %d : ", I4[i][j][0], I4[i][j][1]));
 					j+=28;
 					for (int k = 1; k < 30; k++) {
 						if (I4[i][k][0] == 0 && I4[i][k][1] == 0)  {
 							continue;
 						} else {
-							System.out.format("[%d %d] ", I4[i][k][0], I4[i][k][1]);
+							area.append(String.format("[%d %d] ", I4[i][k][0], I4[i][k][1]));
 						}
 					}
-					System.out.println();
+					area.append("\n");
 				}
 			}
 		}
-		System.out.println();
+		area.append("\n");
 	}
 
-	private static void showWezlyI34() {
-		for (int i = 0; i < 100; i++) {
-			for (int j = 0; j < 30; j++) {
+	public void showWezlyI34(JTextArea area) {
+		for (int i = 0; i < 2000; i++) {
+			for (int j = 0; j < 500; j++) {
 				if (I34[i][j][0] == 0 && I34[i][j][1] == 0) {
 					continue;
 				} else {
-					System.out.format("I34 : %d %d : ", I34[i][j][0], I34[i][j][1]);
+					area.append(String.format(" I34 : %d %d : ", I34[i][j][0], I34[i][j][1]));
 					j+=28;
 					for (int k = 1; k < 30; k++) {
 						if (I34[i][k][0] == 0 && I34[i][k][1] == 0)  {
 							continue;
 						} else {
-							System.out.format("[%d %d] ", I34[i][k][0], I34[i][k][1]);
+							area.append(String.format("[%d %d] ", I34[i][k][0], I34[i][k][1]));
 						}
 					}
-					System.out.println();
+					area.append("\n");
 				}
 			}
 		}
-		System.out.println();
+		area.append("\n");
 	}
 
-	private static void showWezlyI24() {
-		for (int i = 0; i < 100; i++) {
-			for (int j = 0; j < 30; j++) {
+	public void showWezlyI24(JTextArea area) {
+		for (int i = 0; i < 2000; i++) {
+			for (int j = 0; j < 500; j++) {
 				if (I24[i][j][0] == 0 && I24[i][j][1] == 0) {
 					continue;
 				} else {
-					System.out.format("I24 : %d %d : ", I24[i][j][0], I24[i][j][1]);
+					area.append(String.format(" I24 : %d %d : ", I24[i][j][0], I24[i][j][1]));
 					j+=28;
 					for (int k = 1; k < 30; k++) {
 						if (I24[i][k][0] == 0 && I24[i][k][1] == 0)  {
 							continue;
 						} else {
-							System.out.format("[%d %d] ", I24[i][k][0], I24[i][k][1]);
+							area.append(String.format("[%d %d] ", I24[i][k][0], I24[i][k][1]));
 						}
 					}
-					System.out.println();
+					area.append("\n");
 				}
 			}
 		}
-		System.out.println();
+		area.append("\n");
 	}
 
-	private static void showWezlyI23() {
-		for (int i = 0; i < 100; i++) {
-			for (int j = 0; j < 30; j++) {
+	public void showWezlyI23(JTextArea area) {
+		for (int i = 0; i < 2000; i++) {
+			for (int j = 0; j < 500; j++) {
 				if (I23[i][j][0] == 0 && I23[i][j][1] == 0) {
 					continue;
 				} else {
-					System.out.format("I23 : %d %d : ", I23[i][j][0], I23[i][j][1]);
+					area.append(String.format(" I23 : %d %d : ", I23[i][j][0], I23[i][j][1]));
 					j+=28;
 					for (int k = 1; k < 30; k++) {
 						if (I23[i][k][0] == 0 && I34[i][k][1] == 0)  {
 							continue;
 						} else {
-							System.out.format("[%d %d] ", I23[i][k][0], I23[i][k][1]);
+							area.append(String.format("[%d %d] ", I23[i][k][0], I23[i][k][1]));
 						}
 					}
-					System.out.println();
+					area.append("\n");
 				}
 			}
 		}
-		System.out.println();
+		area.append("\n");
 	}
 
-	private static void showWezlyI13() {
-		for (int i = 0; i < 100; i++) {
-			for (int j = 0; j < 30; j++) {
+	public void showWezlyI13(JTextArea area) {
+		for (int i = 0; i < 2000; i++) {
+			for (int j = 0; j < 500; j++) {
 				if (I13[i][j][0] == 0 && I13[i][j][1] == 0) {
 					continue;
 				} else {
-					System.out.format("I13 : %d %d : ", I13[i][j][0], I13[i][j][1]);
+					area.append(String.format(" I13 : %d %d : ", I13[i][j][0], I13[i][j][1]));
 					j+=28;
 					for (int k = 1; k < 30; k++) {
 						if (I13[i][k][0] == 0 && I13[i][k][1] == 0)  {
 							continue;
 						} else {
-							System.out.format("[%d %d] ", I13[i][k][0], I13[i][k][1]);
+							area.append(String.format("[%d %d] ", I13[i][k][0], I13[i][k][1]));
 						}
 					}
-					System.out.println();
+					area.append("\n");
 				}
 			}
 		}
-		System.out.println();
+		area.append("\n");
 	}
 
 	private static void showCholeskyGrafPart1() {
@@ -923,6 +917,12 @@ public class MainClass {
 
 	private static void fillEP1() {
 		int setne, dziesietne,jednosci;
+		int[][] usedEP1 = new int[2000][2];
+		for (int i = 0; i < 2000; i++) {
+			for (int j = 0; j < 2; j++) {
+				usedEP1[i][j] = -1;
+			}
+		}
 		EP1[0][0] = V2[0];
 		EP1[0][1] = V2[0];
 		for (int i = 1; i < V2.length; i++) {
@@ -932,33 +932,23 @@ public class MainClass {
 			for (int j = 0; j < 2; j++) {
 				EP1[i][j] = setne * Fs1[j][0] + dziesietne * Fs1[j][1] + jednosci * Fs1[j][2];
 			}
-			EP1[i][2] = setne * Ft[0] + dziesietne * Ft[1] + jednosci * Ft[2];
-		}
-	}
-
-	private static void sortEP1() {
-		EP11 = new int[2][V2.length];
-		int[] index = new int[V2.length];
-		int[] EP111 = new int[V2.length];
-		for (int i = 0; i < V2.length; i++) {
-			EP11[0][i] = i;
-			EP11[1][i] = EP1[i][0] * 10 + EP1[i][1];
-			EP111[i] = EP1[i][0] * 10 + EP1[i][1];
-		}
-		Arrays.sort(EP111, 0, EP111.length);
-
-		for (int i = 0; i < V2.length; i++) {
-			if (EP11[1][i] == EP111[i]) {
-				for (int j = 0; j < index.length; j++) {
-				}
-				index[i] = i;
+			if (matrixSearch(usedEP1, EP1[i][0], EP1[i][1])) {
+				usedEP1[i][0] = EP1[i][0];
+				usedEP1[i][1] = EP1[i][1];
+				EP1Index++;
 			}
-			System.out.print(EP11[0][i] + "\t\t" + EP11[1][i] + "\t\t" + EP111[i] + "\n");
+			EP1[i][2] = setne * Ft[0] + dziesietne * Ft[1] + jednosci * Ft[2];
 		}
 	}
 
 	private static void fillEP2() {
 		int setne, dziesietne,jednosci;
+		int[][] usedEP2 = new int[2000][2];
+		for (int i = 0; i < 2000; i++) {
+			for (int j = 0; j < 2; j++) {
+				usedEP2[i][j] = -1;
+			}
+		}
 		EP2[0][0] = V2[0];
 		EP2[0][1] = V2[0];
 		for (int i = 1; i < V2.length; i++) {
@@ -968,12 +958,23 @@ public class MainClass {
 			for (int j = 0; j < 2; j++) {
 				EP2[i][j] = setne * Fs2[j][0] + dziesietne * Fs2[j][1] + jednosci * Fs2[j][2];
 			}
+			if (matrixSearch(usedEP2, EP2[i][0], EP2[i][1])) {
+				usedEP2[i][0] = EP2[i][0];
+				usedEP2[i][1] = EP2[i][1];
+				EP2Index++;
+			}
 			EP2[i][2] = setne * Ft[0] + dziesietne * Ft[1] + jednosci * Ft[2];
 		}
 	}
 
 	private static void fillEP3() {
 		int setne, dziesietne,jednosci;
+		int[][] usedEP3 = new int[2000][2];
+		for (int i = 0; i < 2000; i++) {
+			for (int j = 0; j < 2; j++) {
+				usedEP3[i][j] = -1;
+			}
+		}
 		EP3[0][0] = V2[0];
 		EP3[0][1] = V2[0];
 		for (int i = 1; i < V2.length; i++) {
@@ -981,56 +982,72 @@ public class MainClass {
 			dziesietne = V2[i]/10 - setne*10;
 			jednosci = V2[i] - setne*100 - dziesietne*10;
 			EP3[i][1] = setne * Fs3[0] + dziesietne * Fs3[1] + jednosci * Fs3[2];
+			if (matrixSearch(usedEP3, -1,  EP3[i][1])) {
+				usedEP3[i][1] = EP3[i][1];
+				EP3Index++;
+			}
 			EP3[i][2] = setne * Ft[0] + dziesietne * Ft[1] + jednosci * Ft[2];
 		}
 	}
 
-	private static void showEP1() {
-		System.out.println("nr		EP1.1	EP1.2	takt");
+	private static void calculateSrEP() {
+		srEP1 = ((V2.length-1) * 1.0f)/(EP1Index * EP1[V2.length-1][2]);
+		srEP2 = ((V2.length-1) * 1.0f)/(EP2Index * EP2[V2.length-1][2]);
+		srEP3 = ((V2.length-1) * 1.0f)/(EP3Index * EP3[V2.length-1][2]);
+	}
+
+	public void showEP1(JTextArea area) {
+		area.append("  nr	EP1.1	EP1.2	takt \n");
 		for (int i = 0; i < EP1.length; i++) {
 			if (EP1[i][0] == 0 && EP1[i][1] == 0 && i != 0) {
 				//continue;
 			} else {
-				System.out.print(i);
-				System.out.print("		");
-				System.out.print(EP1[i][0]);
-				System.out.print("		");
-				System.out.print(EP1[i][1]);
-				System.out.print("		");
-				System.out.println(EP1[i][2]);
+				area.append("  ");
+				area.append(String.valueOf(i));
+				area.append("	");
+				area.append(String.valueOf(EP1[i][0]));
+				area.append("	");
+				area.append(String.valueOf(EP1[i][1]));
+				area.append("	");
+				area.append(String.valueOf(EP1[i][2]));
+				area.append("\n");
 			}
 		}
 	}
 
-	private static void showEP2() {
-		System.out.println("nr		EP2.1	EP2.2	takt");
+	public void showEP2(JTextArea area) {
+		area.append("  nr	EP2.1	EP2.2	takt \n");
 		for (int i = 0; i < EP2.length; i++) {
 			if (EP2[i][0] == 0 && EP2[i][1] == 0 && i != 0) {
 				//continue;
 			} else {
-				System.out.print(i);
-				System.out.print("		");
-				System.out.print(EP2[i][0]);
-				System.out.print("		");
-				System.out.print(EP2[i][1]);
-				System.out.print("		");
-				System.out.println(EP2[i][2]);
+				area.append("  ");
+				area.append(String.valueOf(i));
+				area.append("	");
+				area.append(String.valueOf(EP2[i][0]));
+				area.append("	");
+				area.append(String.valueOf(EP2[i][1]));
+				area.append("	");
+				area.append(String.valueOf(EP2[i][2]));
+				area.append("\n");
 			}
 		}
 	}
 
-	private static void showEP3() {
+	public void showEP3(JTextArea area) {
 		boolean pass0 = false;
-		System.out.println("nr		EP3.1		takt");
+		area.append("   nr	EP3.1	takt \n");
 		for (int i = 0; i < EP3.length; i++) {
 			if (EP3[i][1] == 0 && pass0) {
 				continue;
 			} else {
-				System.out.print(i);
-				System.out.print("		");
-				System.out.print(EP3[i][1]);
-				System.out.print("			");
-				System.out.println(EP3[i][2]);
+				area.append("   ");
+				area.append(String.valueOf(i));
+				area.append("	");
+				area.append(String.valueOf(EP3[i][1]));
+				area.append("	");
+				area.append(String.valueOf(EP3[i][2]));
+				area.append("\n");
 			}
 			if (EP3[i][1] == 1) {
 				pass0 = true;
@@ -1038,31 +1055,9 @@ public class MainClass {
 		}
 	}
 
-	private static void setTriangleMatrix(int N) {
-		for(int i = 0; i < N; i++) {
-			for (int j = 0; j < N; j++) {
-				if (i >= j) {
-					L[i][j] = A[i][j];
-				}
-			}
-		}
-	}
+	public double getSrEP1() { return srEP1; }
 
-	private static void transposeLMatrix(int N) {
-		for(int i = 0 ; i < N ; i++){
-			for(int j = 0 ; j < N ; j++){
-				Lt[i][j] = L[j][i];
-			}
-		}
-	}
+	public double getSrEP2() { return srEP2; }
 
-	private static void multiplyMatrix(int N) {
-		for (int i = 0; i < N; i++) {
-			for (int j = 0; j < N; j++) {
-				for (int k = 0; k < N; k++) {
-					M[i][j] += L[i][k] * Lt[k][j];
-				}
-			}
-		}
-	}
+	public double getSrEP3() { return srEP3; }
 }
